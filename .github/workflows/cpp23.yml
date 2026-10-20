@@ -1,0 +1,35 @@
+name: C++23
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cpp23-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install C++ build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes cmake ninja-build g++
+
+      - name: Configure
+        run: cmake -S cpp23 -B build/cpp23 -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build/cpp23 --parallel 2
+
+      - name: Test
+        run: ctest --test-dir build/cpp23 --output-on-failure

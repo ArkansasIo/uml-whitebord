@@ -1,0 +1,47 @@
+openapi: 3.1.0
+info:
+  title: MLTA Engine API
+  version: 0.1.0
+  description: Transport-neutral contract for an API adapter around MLTAEngine.
+servers:
+  - url: http://localhost:8080
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200': { description: Engine process is healthy }
+  /v1/capabilities:
+    get:
+      summary: List engine capabilities
+      responses:
+        '200': { description: Capability identifiers }
+  /v1/validate:
+    post:
+      summary: Validate MLTA expression source
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema: { type: string }
+      responses:
+        '200': { description: Source is valid }
+        '422': { description: Source contains diagnostics }
+  /v1/execute:
+    post:
+      summary: Execute MLTA expression source
+      description: Bounded by configured source, depth, and instruction budgets. Network deployment must supply authentication, rate limits, and transport security.
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema: { type: string }
+      responses:
+        '200': { description: Execution succeeded }
+        '422': { description: Execution failed }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+security: []

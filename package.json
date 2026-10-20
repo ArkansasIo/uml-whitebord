@@ -1,0 +1,19 @@
+{
+  "name": "@arkansasio/framework-temp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Universal application framework and algorithm template",
+  "license": "MIT",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "clean": "node -e \"import('node:fs').then(fs => fs.rmSync('dist', { recursive: true, force: true }))\"",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "npm run build && node --test dist/tests/core.test.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "@types/node": "^22.15.30"
+  }
+}

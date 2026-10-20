@@ -1,0 +1,25 @@
+name: MLTA Studio C++23 CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "mlta-studio/**"
+      - ".github/workflows/mlta-studio.yml"
+  pull_request:
+    paths:
+      - "mlta-studio/**"
+      - ".github/workflows/mlta-studio.yml"
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S mlta-studio -B build/mlta-studio -DMLTA_STUDIO_ENABLE_QT=OFF -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build/mlta-studio --parallel 2
+      - name: Test
+        run: ctest --test-dir build/mlta-studio --output-on-failure

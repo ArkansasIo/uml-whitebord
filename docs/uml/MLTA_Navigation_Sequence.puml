@@ -1,0 +1,30 @@
+@startuml MLTA_Navigation_Sequence
+title Navigation and Command Dispatch — Sequence Diagram
+autonumber
+actor User
+participant "MenuBar / NavigationPanel" as UI
+participant "ApplicationAPI" as API
+participant "PageRouter" as Router
+participant "WorkspaceView" as Workspace
+participant "CommandRegistry" as Commands
+participant "EventBus" as Events
+
+alt User navigates to a page
+  User -> UI: select page / submenu
+  UI -> API: navigate(route)
+  API -> Router: navigate(route)
+  Router -> Workspace: openPage(pageId)
+  Workspace --> Router: Result
+  Router -> Events: publish(PageChanged)
+  Events --> API: event notification
+  API --> UI: Result
+else User activates a command
+  User -> UI: click toolbar/menu item
+  UI -> API: executeCommand(id, args)
+  API -> Commands: execute(id, context)
+  Commands -> Events: publish(CommandStarted)
+  Commands --> API: CommandResult
+  API -> Events: publish(CommandCompleted)
+  API --> UI: ApiResponse
+end
+@enduml

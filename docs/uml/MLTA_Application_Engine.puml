@@ -1,0 +1,282 @@
+@startuml MLTA_Application_Engine
+title MLTA Application Engine — C++23 UML Class Diagram
+left to right direction
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+package "Application Core" {
+  class ApplicationEngine {
+    - EngineConfig config
+    - ServiceRegistry services
+    - PageRouter router
+    - EventBus events
+    + initialize(): Result
+    + run(): int
+    + shutdown(): void
+    + loadWorkspace(id: string): Result
+  }
+  class EngineConfig {
+    + appName: string
+    + version: string
+    + locale: string
+    + theme: ThemeMode
+    + maxPages: size_t
+  }
+  class ServiceRegistry {
+    + registerService<T>(service): Result
+    + resolve<T>(): T*
+    + unregisterService(id): void
+  }
+  class EventBus {
+    + subscribe(event, handler): Subscription
+    + publish(event): void
+    + unsubscribe(id): void
+  }
+  class CommandRegistry {
+    + register(command): Result
+    + execute(commandId, context): CommandResult
+    + listCommands(): vector<CommandInfo>
+  }
+  class Command {
+    + id: string
+    + label: string
+    + enabled: bool
+    + execute(context): CommandResult
+  }
+}
+package "GUI Shell" {
+  class MainWindow {
+    - HeaderBar header
+    - MenuBar menuBar
+    - ToolBar toolBar
+    - NavigationPanel navigation
+    - WorkspaceView workspace
+    - FooterBar footer
+    + show(): void
+    + setTitle(title): void
+    + setStatus(message): void
+  }
+  class HeaderBar {
+    + setTitle(title): void
+    + showAccountMenu(): void
+    + showWindowActions(): void
+  }
+  class MenuBar {
+    - vector<Menu> menus
+    + addMenu(menu): void
+    + removeMenu(id): void
+    + dispatch(actionId): void
+  }
+  class Menu {
+    + id: string
+    + label: string
+    + items: vector<MenuItem>
+    + addItem(item): void
+  }
+  class MenuItem {
+    + id: string
+    + label: string
+    + shortcut: string
+    + enabled: bool
+    + actionId: string
+  }
+  class ToolBar {
+    - vector<ToolItem> items
+    + addTool(item): void
+    + invoke(actionId): void
+  }
+  class ToolItem {
+    + id: string
+    + label: string
+    + iconKey: string
+    + actionId: string
+  }
+  class NavigationPanel {
+    - NavigationTree tree
+    + navigate(pageId): Result
+    + expand(nodeId): void
+    + collapse(nodeId): void
+  }
+  class NavigationTree {
+    + roots: vector<NavigationNode>
+    + find(id): NavigationNode*
+  }
+  class NavigationNode {
+    + id: string
+    + label: string
+    + pageId: string
+    + children: vector<NavigationNode>
+  }
+  class WorkspaceView {
+    - PageHost pageHost
+    + openPage(pageId): Result
+    + closePage(pageId): void
+    + activePage(): Page*
+  }
+  class PageHost {
+    - vector<Page> pages
+    + mount(page): Result
+    + unmount(pageId): void
+    + activate(pageId): Result
+  }
+  abstract class Page {
+    + id: string
+    + title: string
+    + route: string
+    + onEnter(): void
+    + onLeave(): void
+    + render(): void
+  }
+  class FooterBar {
+    + setStatus(text): void
+    + setProgress(value): void
+    + setConnectionState(state): void
+  }
+}
+package "Routing and Layout" {
+  class PageRouter {
+    + registerRoute(route, factory): Result
+    + navigate(route): Result
+    + back(): Result
+    + forward(): Result
+    + currentRoute(): string
+  }
+  class LayoutManager {
+    + addRegion(region): Result
+    + setLayout(layoutId): Result
+    + resize(regionId, size): void
+  }
+  class LayoutRegion {
+    + id: string
+    + role: RegionRole
+    + minWidth: int
+    + minHeight: int
+    + visible: bool
+  }
+  class SubPage {
+    + parentPageId: string
+    + breadcrumb: vector<string>
+  }
+  class PlaneView {
+    + planeId: string
+    + title: string
+    + widgets: vector<Widget>
+    + addWidget(widget): void
+    + removeWidget(widgetId): void
+  }
+  class Widget {
+    + id: string
+    + type: string
+    + config: JsonValue
+  }
+}
+package "Public API" {
+  class ApplicationAPI {
+    + getVersion(): string
+    + navigate(route): Result
+    + executeCommand(id, args): ApiResponse
+    + getPageState(pageId): JsonValue
+    + subscribe(eventName, callback): Subscription
+  }
+  class ApiRequest {
+    + requestId: string
+    + method: string
+    + path: string
+    + headers: Map
+    + body: JsonValue
+  }
+  class ApiResponse {
+    + requestId: string
+    + statusCode: int
+    + body: JsonValue
+    + errors: vector<Diagnostic>
+  }
+  class ApiRouter {
+    + addRoute(method, path, handler): Result
+    + dispatch(request): ApiResponse
+  }
+  class Middleware {
+    + before(request): Result
+    + after(request, response): void
+  }
+  class Diagnostic {
+    + code: string
+    + message: string
+    + severity: Severity
+  }
+}
+package "Persistence and Configuration" {
+  interface IStorageAdapter {
+    + read(key): Result<JsonValue>
+    + write(key, value): Result
+    + remove(key): Result
+  }
+  class JsonFileStorage
+  class SQLiteStorage
+  class SettingsService {
+    + load(): Result
+    + save(): Result
+    + get(key): JsonValue
+    + set(key, value): void
+  }
+  class PluginManager {
+    + discover(): Result
+    + load(pluginId): Result
+    + unload(pluginId): Result
+    + listPlugins(): vector<PluginInfo>
+  }
+}
+
+ApplicationEngine *-- EngineConfig
+ApplicationEngine *-- ServiceRegistry
+ApplicationEngine *-- EventBus
+ApplicationEngine *-- CommandRegistry
+ApplicationEngine *-- PageRouter
+ApplicationEngine --> MainWindow : owns / coordinates
+MainWindow *-- HeaderBar
+MainWindow *-- MenuBar
+MainWindow *-- ToolBar
+MainWindow *-- NavigationPanel
+MainWindow *-- WorkspaceView
+MainWindow *-- FooterBar
+MenuBar *-- "0..*" Menu
+Menu *-- "0..*" MenuItem
+ToolBar *-- "0..*" ToolItem
+NavigationPanel *-- NavigationTree
+NavigationTree *-- "0..*" NavigationNode
+WorkspaceView *-- PageHost
+PageHost o-- "0..*" Page
+NavigationNode --> Page : pageId / route
+MenuItem --> Command : actionId
+ToolItem --> Command : actionId
+CommandRegistry o-- "0..*" Command
+WorkspaceView --> PageRouter
+PageRouter --> Page
+LayoutManager *-- "0..*" LayoutRegion
+Page *-- "0..*" SubPage
+Page *-- "0..*" PlaneView
+PlaneView *-- "0..*" Widget
+ApplicationEngine --> ApplicationAPI
+ApplicationAPI --> ApiRouter
+ApiRouter o-- "0..*" Middleware
+ApplicationAPI --> CommandRegistry
+SettingsService --> IStorageAdapter
+JsonFileStorage ..|> IStorageAdapter
+SQLiteStorage ..|> IStorageAdapter
+ApplicationEngine --> PluginManager
+ApiResponse *-- "0..*" Diagnostic
+
+note right of ApplicationAPI
+  Public API boundary.
+  Keep GUI code dependent on
+  ApplicationAPI interfaces,
+  not implementation internals.
+end note
+note bottom of PlaneView
+  "Plane" is treated as a workspace
+  canvas/view or dashboard plane.
+  Nested planes can be represented
+  by PlaneView widgets or child pages.
+end note
+@enduml
