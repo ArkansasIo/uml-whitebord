@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Binder Module",
+  "type": "object",
+  "required": ["id", "name", "version"],
+  "properties": {
+    "id": {"type":"string","pattern":"^[a-z0-9][a-z0-9._-]*$"},
+    "name": {"type":"string"},
+    "version": {"type":"string"},
+    "dependencies": {"type":"array","items":{"type":"string"}},
+    "permissions": {"type":"array","items":{"type":"string"}},
+    "capabilities": {"type":"array","items":{"type":"string"}},
+    "configuration": {"type":"object"}
+  }
+}

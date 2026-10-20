@@ -1,0 +1,19 @@
+workflow BuildFeature {
+  agent = development
+  inputs = [project.memory, uml.current, repository.current]
+  steps {
+    analyze
+    design
+    implement
+    test
+    verify
+    document
+    persist
+  }
+  verification {
+    contract = true
+    tests = true
+    self_verify = true
+    recovery = true
+  }
+}
