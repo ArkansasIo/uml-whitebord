@@ -31,57 +31,37 @@ jobs:
           node-version: 22
       - name: Check JavaScript syntax
         run: |
-          node --check uml-studio/app.js
-          node --check uml-studio/workspace-shell.js
-          node --check uml-studio/binder-panels.js
-          node --check uml-studio/workbench-data.js
-          node --check uml-studio/verification.js
-          node --check uml-studio/command-palette.js
-          node --check uml-studio/workbench.js
+          for f in app.js workspace-shell.js binder-panels.js workbench-data.js verification.js binder-services.js ollama-adapter.js brain-adapter.js brainscript-engine.js command-palette.js workbench.js; do node --check "uml-studio/$f"; done
       - name: Check required static files
         run: |
-          test -s uml-studio/index.html
-          test -s uml-studio/styles.css
-          test -s uml-studio/binder-panels.css
-          test -s uml-studio/command-palette.css
-          test -s uml-studio/workbench.css
-          test -s uml-studio/app.js
-          test -s uml-studio/workspace-shell.js
-          test -s uml-studio/binder-panels.js
-          test -s uml-studio/workbench-data.js
-          test -s uml-studio/verification.js
-          test -s uml-studio/command-palette.js
-          test -s uml-studio/workbench.js
+          for f in index.html styles.css binder-panels.css command-palette.css workbench.css app.js workspace-shell.js binder-panels.js workbench-data.js verification.js binder-services.js ollama-adapter.js brain-adapter.js brainscript-engine.js command-palette.js workbench.js; do test -s "uml-studio/$f"; done
       - name: Check script and style references
         run: |
           node --input-type=module <<'NODE'
-          import { readFileSync } from "node:fs";
-          const html = readFileSync("uml-studio/index.html", "utf8");
-          const required = ["workspace-shell.js", "app.js", "binder-panels.js", "workbench-data.js", "verification.js", "command-palette.js", "workbench.js", "binder-panels.css", "command-palette.css", "workbench.css"];
-          const missing = required.filter(name => !html.includes(name));
-          if (missing.length) { console.error("Missing asset references:", missing.join(", ")); process.exit(1); }
-          console.log("Validated " + required.length + " Binder IDE asset references.");
+          import { readFileSync } from 'node:fs';
+          const html=readFileSync('uml-studio/index.html','utf8');
+          const required=['workspace-shell.js','app.js','binder-panels.js','workbench-data.js','verification.js','binder-services.js','ollama-adapter.js','brain-adapter.js','brainscript-engine.js','command-palette.js','workbench.js','binder-panels.css','command-palette.css','workbench.css'];
+          const missing=required.filter(x=>!html.includes(x));
+          if(missing.length)throw new Error('Missing asset references: '+missing.join(', '));
+          console.log(`Validated ${required.length} Binder IDE references.`);
           NODE
-      - name: Validate BrainScript and verification services
+      - name: Validate AI runtime contracts
         run: |
           node --input-type=module <<'NODE'
-          import { readFileSync } from "node:fs";
-          const script = readFileSync("uml-studio/verification.js", "utf8");
-          for (const token of ["validateScript", "verify", "AIBinderVerification"]) {
-            if (!script.includes(token)) throw new Error(`Missing verification token: ${token}`);
-          }
-          console.log("Verification service contract present.");
+          import { readFileSync } from 'node:fs';
+          const checks=[['uml-studio/verification.js',['validateScript','AIBinderVerification']],['uml-studio/brainscript-engine.js',['parse','execute','AIBinderBrainScript']],['uml-studio/ollama-adapter.js',['generate','ping','AIBinderOllama']],['uml-studio/brain-adapter.js',['AIBinderBrain']]];
+          for(const [file,tokens] of checks){const text=readFileSync(file,'utf8');for(const token of tokens)if(!text.includes(token))throw new Error(`${file}: missing ${token}`)}
+          console.log('AI runtime contracts present.');
           NODE
       - name: Check required element IDs
         run: |
           node --input-type=module <<'NODE'
-          import { readFileSync } from "node:fs";
-          const html = readFileSync("uml-studio/index.html", "utf8");
-          const js = readFileSync("uml-studio/app.js", "utf8");
-          const ids = [...js.matchAll(/\$\("([A-Za-z][A-Za-z0-9_-]*)"\)/g)].map(match => match[1]);
-          const missing = [...new Set(ids)].filter(id => !html.includes('id="' + id + '"') && !html.includes("id='" + id + "'"));
-          if (missing.length) { console.error("Missing HTML IDs:", missing.join(", ")); process.exit(1); }
-          console.log("Validated " + new Set(ids).size + " referenced UI element IDs.");
+          import { readFileSync } from 'node:fs';
+          const html=readFileSync('uml-studio/index.html','utf8'),js=readFileSync('uml-studio/app.js','utf8');
+          const ids=[...js.matchAll(/\$\("([A-Za-z][A-Za-z0-9_-]*)"\)/g)].map(m=>m[1]);
+          const missing=[...new Set(ids)].filter(id=>!html.includes('id="'+id+'"')&&!html.includes("id='"+id+"'"));
+          if(missing.length)throw new Error('Missing HTML IDs: '+missing.join(', '));
+          console.log(`Validated ${new Set(ids).size} referenced UI IDs.`);
           NODE
 
   deploy:
