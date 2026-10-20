@@ -43,7 +43,7 @@ jobs:
           const html = readFileSync("uml-studio/index.html", "utf8");
           const js = readFileSync("uml-studio/app.js", "utf8");
           const ids = [...js.matchAll(/\$\("([A-Za-z][A-Za-z0-9_-]*)"\)/g)].map(match => match[1]);
-          const missing = [...new Set(ids)].filter(id => !new RegExp('\\bid=["\\']' + id + '["\\']').test(html));
+          const missing = [...new Set(ids)].filter(id => !html.includes('id="' + id + '"') && !html.includes("id='" + id + "'"));
           if (missing.length) {
             console.error("Missing HTML IDs:", missing.join(", "));
             process.exit(1);
