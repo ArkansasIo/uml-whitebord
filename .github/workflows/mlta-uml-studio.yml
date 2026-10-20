@@ -35,28 +35,31 @@ jobs:
           node --check uml-studio/workspace-shell.js
           node --check uml-studio/binder-panels.js
           node --check uml-studio/command-palette.js
+          node --check uml-studio/workbench.js
       - name: Check required static files
         run: |
           test -s uml-studio/index.html
           test -s uml-studio/styles.css
           test -s uml-studio/binder-panels.css
           test -s uml-studio/command-palette.css
+          test -s uml-studio/workbench.css
           test -s uml-studio/app.js
           test -s uml-studio/workspace-shell.js
           test -s uml-studio/binder-panels.js
           test -s uml-studio/command-palette.js
-      - name: Check script references
+          test -s uml-studio/workbench.js
+      - name: Check script and style references
         run: |
           node --input-type=module <<'NODE'
           import { readFileSync } from "node:fs";
           const html = readFileSync("uml-studio/index.html", "utf8");
-          const required = ["workspace-shell.js", "app.js", "binder-panels.js", "command-palette.js", "binder-panels.css", "command-palette.css"];
+          const required = ["workspace-shell.js", "app.js", "binder-panels.js", "command-palette.js", "workbench.js", "binder-panels.css", "command-palette.css", "workbench.css"];
           const missing = required.filter(name => !html.includes(name));
           if (missing.length) {
             console.error("Missing asset references:", missing.join(", "));
             process.exit(1);
           }
-          console.log("Validated " + required.length + " Binder UI asset references.");
+          console.log("Validated " + required.length + " Binder IDE asset references.");
           NODE
       - name: Check required element IDs
         run: |
