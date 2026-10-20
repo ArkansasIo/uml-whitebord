@@ -32,7 +32,21 @@ jobs:
       - name: Check JavaScript syntax
         run: node --check uml-studio/app.js
       - name: Check required static files
-        run: test -s uml-studio/index.html && test -s uml-studio/styles.css && test -s uml-studio/app.js
+        run: |
+          test -s uml-studio/index.html
+          test -s uml-studio/styles.css
+          test -s uml-studio/app.js
+      - name: Check required element IDs
+        run: |
+          node --input-type=module -e '
+            import { readFileSync } from "node:fs";
+            const html = readFileSync("uml-studio/index.html", "utf8");
+            const js = readFileSync("uml-studio/app.js", "utf8");
+            const ids = [...js.matchAll(/\$\("([A-Za-z][A-Za-z0-9_-]*)"\)/g)].map(m => m[1]);
+            const missing = [...new Set(ids)].filter(id => !new RegExp("\\bid=[\"']" + id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[\"']").test(html));
+            if (missing.length) { console.error("Missing HTML IDs:", missing.join(", ")); process.exit(1); }
+            console.log("Validated " + new Set(ids).size + " referenced UI element IDs.");
+          '
 
   deploy:
     if: github.event_name != 'pull_request'
@@ -44,8 +58,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: uml-studio
