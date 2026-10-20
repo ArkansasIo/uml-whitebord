@@ -38,15 +38,18 @@ jobs:
           test -s uml-studio/app.js
       - name: Check required element IDs
         run: |
-          node --input-type=module -e '
-            import { readFileSync } from "node:fs";
-            const html = readFileSync("uml-studio/index.html", "utf8");
-            const js = readFileSync("uml-studio/app.js", "utf8");
-            const ids = [...js.matchAll(/\$\("([A-Za-z][A-Za-z0-9_-]*)"\)/g)].map(m => m[1]);
-            const missing = [...new Set(ids)].filter(id => !new RegExp("\\bid=[\"']" + id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[\"']").test(html));
-            if (missing.length) { console.error("Missing HTML IDs:", missing.join(", ")); process.exit(1); }
-            console.log("Validated " + new Set(ids).size + " referenced UI element IDs.");
-          '
+          node --input-type=module <<'NODE'
+          import { readFileSync } from "node:fs";
+          const html = readFileSync("uml-studio/index.html", "utf8");
+          const js = readFileSync("uml-studio/app.js", "utf8");
+          const ids = [...js.matchAll(/\$\("([A-Za-z][A-Za-z0-9_-]*)"\)/g)].map(match => match[1]);
+          const missing = [...new Set(ids)].filter(id => !new RegExp('\\bid=["\\']' + id + '["\\']').test(html));
+          if (missing.length) {
+            console.error("Missing HTML IDs:", missing.join(", "));
+            process.exit(1);
+          }
+          console.log("Validated " + new Set(ids).size + " referenced UI element IDs.");
+          NODE
 
   deploy:
     if: github.event_name != 'pull_request'
