@@ -30,12 +30,15 @@ jobs:
         with:
           node-version: 22
       - name: Check JavaScript syntax
-        run: node --check uml-studio/app.js
+        run: |
+          node --check uml-studio/app.js
+          node --check uml-studio/workspace-shell.js
       - name: Check required static files
         run: |
           test -s uml-studio/index.html
           test -s uml-studio/styles.css
           test -s uml-studio/app.js
+          test -s uml-studio/workspace-shell.js
       - name: Check required element IDs
         run: |
           node --input-type=module <<'NODE'
@@ -61,7 +64,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: uml-studio
       - id: deployment
