@@ -34,6 +34,8 @@ jobs:
           node --check uml-studio/app.js
           node --check uml-studio/workspace-shell.js
           node --check uml-studio/binder-panels.js
+          node --check uml-studio/workbench-data.js
+          node --check uml-studio/verification.js
           node --check uml-studio/command-palette.js
           node --check uml-studio/workbench.js
       - name: Check required static files
@@ -46,6 +48,8 @@ jobs:
           test -s uml-studio/app.js
           test -s uml-studio/workspace-shell.js
           test -s uml-studio/binder-panels.js
+          test -s uml-studio/workbench-data.js
+          test -s uml-studio/verification.js
           test -s uml-studio/command-palette.js
           test -s uml-studio/workbench.js
       - name: Check script and style references
@@ -53,13 +57,20 @@ jobs:
           node --input-type=module <<'NODE'
           import { readFileSync } from "node:fs";
           const html = readFileSync("uml-studio/index.html", "utf8");
-          const required = ["workspace-shell.js", "app.js", "binder-panels.js", "command-palette.js", "workbench.js", "binder-panels.css", "command-palette.css", "workbench.css"];
+          const required = ["workspace-shell.js", "app.js", "binder-panels.js", "workbench-data.js", "verification.js", "command-palette.js", "workbench.js", "binder-panels.css", "command-palette.css", "workbench.css"];
           const missing = required.filter(name => !html.includes(name));
-          if (missing.length) {
-            console.error("Missing asset references:", missing.join(", "));
-            process.exit(1);
-          }
+          if (missing.length) { console.error("Missing asset references:", missing.join(", ")); process.exit(1); }
           console.log("Validated " + required.length + " Binder IDE asset references.");
+          NODE
+      - name: Validate BrainScript and verification services
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from "node:fs";
+          const script = readFileSync("uml-studio/verification.js", "utf8");
+          for (const token of ["validateScript", "verify", "AIBinderVerification"]) {
+            if (!script.includes(token)) throw new Error(`Missing verification token: ${token}`);
+          }
+          console.log("Verification service contract present.");
           NODE
       - name: Check required element IDs
         run: |
@@ -69,10 +80,7 @@ jobs:
           const js = readFileSync("uml-studio/app.js", "utf8");
           const ids = [...js.matchAll(/\$\("([A-Za-z][A-Za-z0-9_-]*)"\)/g)].map(match => match[1]);
           const missing = [...new Set(ids)].filter(id => !html.includes('id="' + id + '"') && !html.includes("id='" + id + "'"));
-          if (missing.length) {
-            console.error("Missing HTML IDs:", missing.join(", "));
-            process.exit(1);
-          }
+          if (missing.length) { console.error("Missing HTML IDs:", missing.join(", ")); process.exit(1); }
           console.log("Validated " + new Set(ids).size + " referenced UI element IDs.");
           NODE
 
