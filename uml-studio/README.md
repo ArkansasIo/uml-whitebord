@@ -1,32 +1,56 @@
 # MLTA UML Studio
 
-An original browser-based UML diagram editor prototype inspired by visual diagramming workspaces such as Lucidchart. It does not use Lucidchart source code, branding, or assets.
+A lightweight, static browser UML editor with a diagram canvas, UML shapes, editable relationships, local persistence, undo/redo, and JSON/SVG interchange.
 
-## Run
+## Run locally
 
-Open index.html in a modern browser or serve this folder with any static web server. No package installation or build step is required.
+Open `index.html` in a current desktop browser, or serve this folder with a static web server. The app does not require npm, a build process, or a backend.
 
-## Included
+For example, from the repository root:
 
-- UML palette: class, interface, package, component, use case, actor, database, note, and state.
-- Click to add shapes; drag existing shapes to move them.
-- Connector tool and relationship types: association, dependency, inheritance, composition, aggregation.
-- Inspector for element name/type/description, class members, position, and dimensions.
-- Grid and snap-to-grid settings, canvas background, zoom controls, and fit reset.
+```sh
+python -m http.server 8000
+```
+
+Then open `http://localhost:8000/uml-studio/`.
+
+## Features
+
+- Class, interface, package, component, use-case, actor, database, note, and state shapes.
+- Drag to position shapes, connect elements, and edit names, descriptions, members, dimensions, and relationships.
+- Grid visibility, snap-to-grid, zoom, and fit-to-diagram controls.
 - Undo/redo and keyboard shortcuts.
-- Browser local-storage save/restore.
-- SVG export and editable JSON export/import.
-- Responsive workspace and sample MLTAEngine class diagram.
+- Browser-local save/restore with JSON import/export.
+- SVG export for vector workflows.
+- Responsive layout for desktop and mobile-sized screens.
 
 ## Keyboard shortcuts
 
-- Ctrl/Cmd+Z: undo
-- Ctrl/Cmd+Y: redo
-- Ctrl/Cmd+S: save locally
-- Delete/Backspace: delete selection
-- C: connector mode
-- Escape: selection mode
+| Shortcut | Action |
+|---|---|
+| Ctrl/Cmd + Z | Undo |
+| Ctrl/Cmd + Y | Redo |
+| Ctrl/Cmd + S | Save in this browser |
+| Delete / Backspace | Delete selected shape or relationship |
+| C | Connector tool |
+| Escape | Return to selection tool |
 
-## Prototype limitations
+## Saving and portability
 
-This is not a complete Lucidchart replacement. It does not yet include accounts, cloud persistence, live multi-user collaboration, access controls, comments, version history, specialized sequence/activity/state-machine editors, or UML standards validation. Sharing is via the exported JSON file. The MLTAEngine C++ backend is not yet connected to this static app.
+The Save button writes the current diagram to browser local storage for this site. Browser storage is local to a browser profile and origin; it is not cloud synchronization. Use **Export → Editable JSON file** to back up or transfer a diagram, and **Export → Import JSON file** to reopen it elsewhere.
+
+Imported JSON is validated for expected shape and relationship references before replacing the current diagram. Keep exported files under version control only when that is appropriate for your project.
+
+## GitHub Pages
+
+The workflow at `.github/workflows/mlta-uml-studio.yml` checks JavaScript syntax and required app files, then deploys the `uml-studio/` directory to GitHub Pages on pushes to `main` and manual workflow runs.
+
+The repository's Pages deployment must use **GitHub Actions** as its build and deployment source. The workflow needs permission to deploy to the `github-pages` environment. The published address is normally:
+
+`https://arkansasio.github.io/uml-whitebord/`
+
+Confirm the exact URL and deployment status in **Settings → Pages** and the **Actions** tab after the workflow completes.
+
+## Scope and limitations
+
+This is a client-side prototype. Diagrams live in one browser unless exported and transferred manually. There is no account system, server-side storage, live collaboration, cloud sharing, comments, version history, or server API integration. UML validation and specialized sequence/activity editors are not included yet.
