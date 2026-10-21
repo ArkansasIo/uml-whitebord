@@ -4,15 +4,15 @@
   const load=()=>{try{return {...defaults,...JSON.parse(localStorage.getItem(STORAGE)||'{}')}}catch{return {...defaults}}};
   const save=s=>localStorage.setItem(STORAGE,JSON.stringify(s));
   const emit=(type,message)=>window.AIBinderData?.event(type,message);
-  const state=()=>({title:document.getElementById('title')?.value||'Untitled',shapes:window.AIBinderFeatureTools?.getModel?.()?.nodes||[],connectors:window.AIBinderFeatureTools?.getModel?.()?.edges||[]});
+  const state=()=>{try{const d=JSON.parse(localStorage.getItem('mlta-uml-studio')||'null');return {title:document.getElementById('title')?.value||d?.title||'Untitled',shapes:d?.nodes||[],connectors:d?.edges||[]}}catch{return {title:document.getElementById('title')?.value||'Untitled',shapes:[],connectors:[]}}};
   const tools={
     inspect_diagram:()=>({ok:true,diagram:state()}),
-    validate_diagram:()=>window.AIBinderFeatureTools?.validate?.()||{ok:false,error:'Validation tool unavailable'},
-    auto_layout:()=>window.AIBinderFeatureTools?.autoLayout?.()||{ok:false,error:'Layout tool unavailable'},
-    duplicate_selection:()=>window.AIBinderFeatureTools?.duplicateSelection?.()||{ok:false,error:'Duplicate tool unavailable'}
+    validate_diagram:()=>{const errors=window.UMLFeatureTools?.validate?.();return {ok:Array.isArray(errors)&&errors.length===0,errors:Array.isArray(errors)?errors:['Validation tool unavailable']};},
+    auto_layout:()=>{window.UMLFeatureTools?.autoLayout?.();return {ok:true,message:'Automatic layout requested.'};},
+    duplicate_selection:()=>{window.UMLFeatureTools?.duplicate?.();return {ok:true,message:'Duplicate selection requested.'};}
   };
   async function runTool(name,args={}){if(!tools[name])return {ok:false,error:`Unknown tool: ${name}`};emit('agent.tool',name);try{return await tools[name](args)}catch(e){return {ok:false,error:e.message}}}
-  function buildPrompt(history,user){const s=state();return `${defaults.system}\n\nCurrent diagram JSON:\n${JSON.stringify(s).slice(0,14000)}\n\nAvailable tools: inspect_diagram, validate_diagram, auto_layout, duplicate_selection.\nWhen a tool is needed, output exactly one line: TOOL:<name> then continue with a short explanation.\nConversation:\n${history.map(x=>`${x.role}: ${x.content}`).join('\n')}\nuser: ${user}`}
+  function buildPrompt(history,user){const s=state();return `${load().system}\n\nCurrent diagram JSON:\n${JSON.stringify(s).slice(0,14000)}\n\nAvailable tools: inspect_diagram, validate_diagram, auto_layout, duplicate_selection.\nWhen a tool is needed, output exactly one line: TOOL:<name> then continue with a short explanation.\nConversation:\n${history.map(x=>`${x.role}: ${x.content}`).join('\n')}\nuser: ${user}`}
   async function chat(user,history=[]){
     const settings=load();
     if(!window.AIBinderOllama?.generate)return {ok:false,error:'Local Ollama adapter is unavailable.'};
