@@ -31,16 +31,16 @@ jobs:
           node-version: 22
       - name: Check JavaScript syntax
         run: |
-          for f in app.js workspace-shell.js binder-panels.js workbench-data.js verification.js binder-services.js ollama-adapter.js brain-adapter.js brainscript-engine.js command-palette.js workbench.js; do node --check "uml-studio/$f"; done
+          for f in app.js workspace-shell.js binder-panels.js workbench-data.js verification.js binder-services.js ollama-adapter.js brain-adapter.js brainscript-engine.js command-palette.js workbench.js feature-tools.js agent-chat.js agent-chat-ui.js; do node --check "uml-studio/$f"; done
       - name: Check required static files
         run: |
-          for f in index.html styles.css binder-panels.css command-palette.css workbench.css app.js workspace-shell.js binder-panels.js workbench-data.js verification.js binder-services.js ollama-adapter.js brain-adapter.js brainscript-engine.js command-palette.js workbench.js; do test -s "uml-studio/$f"; done
+          for f in index.html styles.css binder-panels.css command-palette.css workbench.css agent-chat.css app.js workspace-shell.js binder-panels.js workbench-data.js verification.js binder-services.js ollama-adapter.js brain-adapter.js brainscript-engine.js command-palette.js workbench.js feature-tools.js agent-chat.js agent-chat-ui.js; do test -s "uml-studio/$f"; done
       - name: Check script and style references
         run: |
           node --input-type=module <<'NODE'
           import { readFileSync } from 'node:fs';
           const html=readFileSync('uml-studio/index.html','utf8');
-          const required=['workspace-shell.js','app.js','binder-panels.js','workbench-data.js','verification.js','binder-services.js','ollama-adapter.js','brain-adapter.js','brainscript-engine.js','command-palette.js','workbench.js','binder-panels.css','command-palette.css','workbench.css'];
+          const required=['workspace-shell.js','app.js','binder-panels.js','workbench-data.js','verification.js','binder-services.js','ollama-adapter.js','brain-adapter.js','brainscript-engine.js','command-palette.js','workbench.js','feature-tools.js','agent-chat.js','agent-chat-ui.js','binder-panels.css','command-palette.css','workbench.css','agent-chat.css'];
           const missing=required.filter(x=>!html.includes(x));
           if(missing.length)throw new Error('Missing asset references: '+missing.join(', '));
           console.log(`Validated ${required.length} Binder IDE references.`);
@@ -49,7 +49,7 @@ jobs:
         run: |
           node --input-type=module <<'NODE'
           import { readFileSync } from 'node:fs';
-          const checks=[['uml-studio/verification.js',['validateScript','AIBinderVerification']],['uml-studio/brainscript-engine.js',['parse','execute','AIBinderBrainScript']],['uml-studio/ollama-adapter.js',['generate','ping','AIBinderOllama']],['uml-studio/brain-adapter.js',['AIBinderBrain']]];
+          const checks=[['uml-studio/verification.js',['validateScript','AIBinderVerification']],['uml-studio/brainscript-engine.js',['parse','execute','AIBinderBrainScript']],['uml-studio/ollama-adapter.js',['generate','ping','AIBinderOllama']],['uml-studio/brain-adapter.js',['AIBinderBrain']],['uml-studio/agent-chat.js',['AIBinderAgent','inspect_diagram','validate_diagram']],['uml-studio/agent-chat-ui.js',['agentLaunch','agentInput','agentSend']]];
           for(const [file,tokens] of checks){const text=readFileSync(file,'utf8');for(const token of tokens)if(!text.includes(token))throw new Error(`${file}: missing ${token}`)}
           console.log('AI runtime contracts present.');
           NODE
