@@ -14,7 +14,7 @@ python -m http.server 8000
 
 Then open `http://localhost:8000/uml-studio/`.
 
-## Features
+## Current features
 
 - Class, interface, package, component, use-case, actor, database, note, and state shapes.
 - Drag to position shapes, connect elements, and edit names, descriptions, members, dimensions, and relationships.
@@ -23,6 +23,24 @@ Then open `http://localhost:8000/uml-studio/`.
 - Browser-local save/restore with JSON import/export.
 - SVG export for vector workflows.
 - Responsive layout for desktop and mobile-sized screens.
+- UML, Brain, Agents, Memory, Source, Docs, Git, and Runtime workspaces.
+- Command palette and AI/runtime adapter foundations.
+
+## Complete feature specification
+
+See [`FEATURES.md`](./FEATURES.md) for the complete functional target, including structural and behavioral UML, project management, validation, source integration, AI, agents, collaboration, accessibility, security, performance, and testing.
+
+## Complete tool catalog
+
+See [`TOOLS.md`](./TOOLS.md) for the planned toolbar, UML object, relationship, arrangement, validation, AI, agent, Git, runtime, collaboration, accessibility, and security tools.
+
+## Architecture
+
+See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the model, command, AI, collaboration, source-sync, persistence, security, and testing architecture.
+
+## Roadmap
+
+See [`ROADMAP.md`](./ROADMAP.md) for the implementation sequence and definition of done.
 
 ## Keyboard shortcuts
 
@@ -53,4 +71,4 @@ Confirm the exact URL and deployment status in **Settings → Pages** and the **
 
 ## Scope and limitations
 
-This is a client-side prototype. Diagrams live in one browser unless exported and transferred manually. There is no account system, server-side storage, live collaboration, cloud sharing, comments, version history, or server API integration. UML validation and specialized sequence/activity editors are not included yet.
+This is still a client-side prototype. Diagrams live in one browser unless exported and transferred manually. There is no account system, server-side storage, live collaboration, cloud sharing, comments, or server API integration. Specialized sequence/activity/state editors and advanced UML validation remain planned features. The feature and tool documents explicitly distinguish implemented capabilities from planned work.
