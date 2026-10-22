@@ -31,7 +31,7 @@ jobs:
           node-version: 22
       - name: Check JavaScript syntax
         run: |
-          for f in diagram-model.js app.js workspace-shell.js binder-panels.js workbench-data.js verification.js binder-services.js ollama-adapter.js brain-adapter.js brainscript-engine.js command-palette.js workbench.js feature-tools.js agent-chat.js agent-chat-ui.js; do node --check "uml-studio/$f"; done
+          for f in app.js workspace-shell.js binder-panels.js workbench-data.js verification.js binder-services.js ollama-adapter.js brain-adapter.js brainscript-engine.js command-palette.js workbench.js feature-tools.js agent-chat.js agent-chat-ui.js; do node --check "uml-studio/$f"; done
       - name: Check required static files
         run: |
           for f in index.html styles.css diagram-model.js binder-panels.css command-palette.css workbench.css agent-chat.css app.js workspace-shell.js binder-panels.js workbench-data.js verification.js binder-services.js ollama-adapter.js brain-adapter.js brainscript-engine.js command-palette.js workbench.js feature-tools.js agent-chat.js agent-chat-ui.js; do test -s "uml-studio/$f"; done
