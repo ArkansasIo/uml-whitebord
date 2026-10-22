@@ -31,5 +31,9 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Check browser-side UML JavaScript
+        run: |
+          for f in uml-studio/*.js; do node --check "$f"; done
+
       - name: Test
         run: npm test
