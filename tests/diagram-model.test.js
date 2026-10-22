@@ -58,6 +58,11 @@ test('enforces size limits before large model traversal', () => {
   assert.equal(oversized.errors[0].code, 'NODE_LIMIT_EXCEEDED');
 });
 
+test('rejects invalid limit options', () => {
+  assert.throws(() => model.validateDiagram({ nodes: [], edges: [] }, { maxNodes: -1 }), /maxNodes must be non-negative/);
+  assert.throws(() => model.validateDiagram({ nodes: [], edges: [] }, { maxEdges: -1 }), /maxEdges must be non-negative/);
+});
+
 test('normalizes accepted documents into schema version 1', () => {
   const value = model.normalizeDiagram({ title: 'Demo', nodes: [node('a', { x: '5' })], edges: [] });
   assert.equal(value.schemaVersion, 1);
