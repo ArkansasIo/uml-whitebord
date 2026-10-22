@@ -26,6 +26,10 @@ Then open `http://localhost:8000/uml-studio/`.
 - UML, Brain, Agents, Memory, Source, Docs, Git, and Runtime workspaces.
 - Command palette and AI/runtime adapter foundations.
 
+## Diagram model validation
+
+The reusable browser-side model contract is implemented in [`diagram-model.js`](./diagram-model.js) and documented in [`DIAGRAM_MODEL.md`](./DIAGRAM_MODEL.md). It validates supported node/relationship types, unique IDs, geometry bounds, text limits, diagram size, and relationship endpoints. Automated regressions live in [`../tests/diagram-model.test.js`](../tests/diagram-model.test.js). The module is loaded before the editor and checked by the GitHub Pages workflow. Validation of the current editor format is not the same as complete OMG UML conformance.
+
 ## Complete feature specification
 
 See [`FEATURES.md`](./FEATURES.md) for the complete functional target, including structural and behavioral UML, project management, validation, source integration, AI, agents, collaboration, accessibility, security, performance, and testing.
