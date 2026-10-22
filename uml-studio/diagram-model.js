@@ -20,6 +20,8 @@
     const add = (code, message, path = '$') => errors.push({ code, message, path });
     const warn = (code, message, path = '$') => warnings.push({ code, message, path });
 
+    if (typeof options.maxNodes === 'number' && options.maxNodes < 0) throw new Error('maxNodes must be non-negative.');
+    if (typeof options.maxEdges === 'number' && options.maxEdges < 0) throw new Error('maxEdges must be non-negative.');
     if (!input || typeof input !== 'object' || Array.isArray(input)) {
       return { ok: false, errors: [{ code: 'MODEL_NOT_OBJECT', message: 'Diagram must be an object.', path: '$' }], warnings };
     }
