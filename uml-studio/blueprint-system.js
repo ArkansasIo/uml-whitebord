@@ -39,6 +39,60 @@
       {id:"n5",type:"component",name:"Audit / Trace",description:"Record decisions, outputs, failures",members:[],x:540,y:330,w:210,h:90},
       {id:"n6",type:"database",name:"Memory Store",description:"Scoped, access-controlled memory",members:[],x:830,y:330,w:180,h:90}
     ],edges:[{id:"e1",from:"n1",to:"n2",type:"dependency",label:"task"},{id:"e2",from:"n2",to:"n3",type:"dependency",label:"proposed actions"},{id:"e3",from:"n3",to:"n4",type:"dependency",label:"approved actions"},{id:"e4",from:"n4",to:"n5",type:"dependency",label:"events"},{id:"e5",from:"n2",to:"n6",type:"dependency",label:"scoped retrieval"},{id:"e6",from:"n4",to:"n6",type:"association",label:"approved writes"}]}
+    ,
+    {id:"use-case",name:"Use-Case System",category:"UML",description:"Actors and use-case scope starter.",nodes:[
+      {id:"n1",type:"actor",name:"Guest",description:"Unauthenticated visitor",members:[],x:60,y:160,w:90,h:125},
+      {id:"n2",type:"usecase",name:"Register Account",description:"Create a new account",members:[],x:300,y:70,w:180,h:90},
+      {id:"n3",type:"usecase",name:"Sign In",description:"Authenticate user",members:[],x:300,y:200,w:180,h:90},
+      {id:"n4",type:"usecase",name:"Recover Account",description:"Recover access",members:[],x:580,y:200,w:180,h:90},
+      {id:"n5",type:"note",name:"System Boundary",description:"Identity and account access",members:[],x:270,y:25,w:530,h:310}
+    ],edges:[{id:"e1",from:"n1",to:"n2",type:"association",label:"starts"},{id:"e2",from:"n1",to:"n3",type:"association",label:"authenticates"},{id:"e3",from:"n3",to:"n4",type:"dependency",label:"recovery flow"}]},
+    {id:"component-architecture",name:"Component Architecture",category:"UML",description:"Components, service contracts, and storage boundaries.",nodes:[
+      {id:"n1",type:"component",name:"Presentation",description:"Web and mobile clients",members:[],x:60,y:150,w:180,h:100},
+      {id:"n2",type:"component",name:"Application API",description:"Routes and application contracts",members:[],x:330,y:150,w:190,h:100},
+      {id:"n3",type:"component",name:"Domain Services",description:"Business invariants",members:[],x:620,y:150,w:190,h:100},
+      {id:"n4",type:"component",name:"Persistence Adapter",description:"Repository implementation",members:[],x:910,y:150,w:190,h:100},
+      {id:"n5",type:"database",name:"Database",description:"Persistent state",members:[],x:1190,y:150,w:160,h:100}
+    ],edges:[{id:"e1",from:"n1",to:"n2",type:"dependency",label:"HTTP API"},{id:"e2",from:"n2",to:"n3",type:"dependency",label:"commands"},{id:"e3",from:"n3",to:"n4",type:"dependency",label:"repository port"},{id:"e4",from:"n4",to:"n5",type:"association",label:"queries"}]},
+    {id:"deployment",name:"Deployment Topology",category:"UML",description:"Runtime nodes, deployed components, and data storage.",nodes:[
+      {id:"n1",type:"package",name:"Client Devices",description:"Browser and mobile clients",members:[],x:60,y:90,w:210,h:130},
+      {id:"n2",type:"component",name:"Web Frontend",description:"Static assets / SPA",members:[],x:350,y:100,w:180,h:100},
+      {id:"n3",type:"component",name:"Application Server",description:"Authenticated API",members:[],x:650,y:100,w:190,h:100},
+      {id:"n4",type:"database",name:"Primary Database",description:"Durable application records",members:[],x:960,y:100,w:190,h:100},
+      {id:"n5",type:"note",name:"Security Boundary",description:"TLS, identity, network policy, secrets management",members:[],x:630,y:260,w:330,h:100}
+    ],edges:[{id:"e1",from:"n1",to:"n2",type:"dependency",label:"HTTPS"},{id:"e2",from:"n2",to:"n3",type:"dependency",label:"API requests"},{id:"e3",from:"n3",to:"n4",type:"association",label:"private network"}]},
+    {id:"activity-flow",name:"Activity Flow",category:"UML",description:"Activity-flow planning skeleton using supported generic shapes.",nodes:[
+      {id:"n1",type:"state",name:"Start",description:"Entry point",members:[],x:70,y:150,w:120,h:70},
+      {id:"n2",type:"component",name:"Validate Input",description:"Validate command and permissions",members:[],x:280,y:135,w:190,h:100},
+      {id:"n3",type:"component",name:"Execute Action",description:"Perform domain operation",members:[],x:570,y:135,w:190,h:100},
+      {id:"n4",type:"component",name:"Handle Failure",description:"Return safe error and diagnostics",members:[],x:570,y:300,w:190,h:100},
+      {id:"n5",type:"state",name:"Complete",description:"Terminal outcome",members:[],x:880,y:150,w:140,h:70}
+    ],edges:[{id:"e1",from:"n1",to:"n2",type:"dependency",label:"input"},{id:"e2",from:"n2",to:"n3",type:"dependency",label:"valid"},{id:"e3",from:"n2",to:"n4",type:"dependency",label:"invalid"},{id:"e4",from:"n3",to:"n5",type:"dependency",label:"success"},{id:"e5",from:"n4",to:"n5",type:"dependency",label:"handled"}]},
+    {id:"state-machine",name:"State Machine",category:"UML",description:"Entity lifecycle and guarded transitions starter.",nodes:[
+      {id:"n1",type:"state",name:"Draft",description:"Editable, not submitted",members:[],x:60,y:150,w:150,h:75},
+      {id:"n2",type:"state",name:"Submitted",description:"Awaiting validation",members:[],x:330,y:150,w:170,h:75},
+      {id:"n3",type:"state",name:"Approved",description:"Accepted by policy",members:[],x:640,y:70,w:170,h:75},
+      {id:"n4",type:"state",name:"Rejected",description:"Failed validation or review",members:[],x:640,y:240,w:170,h:75},
+      {id:"n5",type:"note",name:"Transition guards",description:"submit [complete]; approve [authorized]; reject [invalid]",members:[],x:330,y:320,w:390,h:85}
+    ],edges:[{id:"e1",from:"n1",to:"n2",type:"dependency",label:"submit"},{id:"e2",from:"n2",to:"n3",type:"dependency",label:"approve [valid]"},{id:"e3",from:"n2",to:"n4",type:"dependency",label:"reject [invalid]"}]},
+    {id:"package-layers",name:"Package Layers",category:"UML",description:"Layered package boundaries and dependency direction.",nodes:[
+      {id:"n1",type:"package",name:"Presentation",description:"Views and user interaction",members:[],x:100,y:70,w:230,h:100},
+      {id:"n2",type:"package",name:"Application",description:"Use cases and orchestration",members:[],x:400,y:70,w:230,h:100},
+      {id:"n3",type:"package",name:"Domain",description:"Entities and business rules",members:[],x:700,y:70,w:230,h:100},
+      {id:"n4",type:"package",name:"Infrastructure",description:"Database, network, external adapters",members:[],x:700,y:260,w:260,h:100}
+    ],edges:[{id:"e1",from:"n1",to:"n2",type:"dependency",label:"calls"},{id:"e2",from:"n2",to:"n3",type:"dependency",label:"uses domain"},{id:"e3",from:"n4",to:"n3",type:"dependency",label:"implements ports"}]},
+    {id:"object-snapshot",name:"Object Snapshot",category:"UML",description:"Example object instances and runtime links.",nodes:[
+      {id:"n1",type:"class",name:"user:User",description:"id = U-1001; status = Active",members:["id = U-1001","status = Active"],x:80,y:120,w:220,h:120},
+      {id:"n2",type:"class",name:"order:Order",description:"id = O-204; total = 89.50",members:["id = O-204","total = 89.50"],x:400,y:120,w:220,h:120},
+      {id:"n3",type:"class",name:"item:OrderItem",description:"quantity = 2",members:["quantity = 2"],x:720,y:120,w:220,h:110}
+    ],edges:[{id:"e1",from:"n1",to:"n2",type:"association",label:"places"},{id:"e2",from:"n2",to:"n3",type:"composition",label:"contains"}]},
+    {id:"sequence-message-flow",name:"Message Flow (Sequence Planning)",category:"UML",description:"Interaction planning placeholder; use the catalog contract for dedicated lifelines and messages.",nodes:[
+      {id:"n1",type:"actor",name:"User",description:"Message initiator",members:[],x:60,y:80,w:90,h:125},
+      {id:"n2",type:"component",name:"UI",description:"Collects intent",members:[],x:260,y:90,w:150,h:90},
+      {id:"n3",type:"component",name:"API",description:"Validates request",members:[],x:520,y:90,w:150,h:90},
+      {id:"n4",type:"component",name:"Service",description:"Executes domain operation",members:[],x:780,y:90,w:170,h:90},
+      {id:"n5",type:"database",name:"Store",description:"Persists result",members:[],x:1060,y:90,w:150,h:90}
+    ],edges:[{id:"e1",from:"n1",to:"n2",type:"dependency",label:"1. intent"},{id:"e2",from:"n2",to:"n3",type:"dependency",label:"2. request"},{id:"e3",from:"n3",to:"n4",type:"dependency",label:"3. validated call"},{id:"e4",from:"n4",to:"n5",type:"association",label:"4. persistence"}]}
   ];
   function clone(value){return JSON.parse(JSON.stringify(value));}
   function validate(template){
