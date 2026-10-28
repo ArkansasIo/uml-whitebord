@@ -13,7 +13,7 @@ test("blueprint library is loaded by the UML Studio page", () => {
 });
 
 test("starter templates cover application, backend, game, data, and AI systems", () => {
-  for (const name of ["Application Class Model", "REST API Architecture", "RPG / MMORPG Core", "Database Domain Model", "AI Agent Runtime"]) {
+  for (const name of ["Application Class Model", "REST API Architecture", "RPG / MMORPG Core", "Database Domain Model", "AI Agent Runtime", "Use-Case System", "Component Architecture", "Deployment Topology", "Activity Flow", "State Machine", "Package Layers", "Object Snapshot", "Message Flow (Sequence Planning)"]) {
     assert.ok(source.includes(name), `Missing blueprint: ${name}`);
   }
 });
