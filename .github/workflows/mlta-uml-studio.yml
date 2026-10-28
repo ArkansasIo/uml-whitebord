@@ -53,7 +53,9 @@ jobs:
           for(const [file,tokens] of checks){const text=readFileSync(file,'utf8');for(const token of tokens)if(!text.includes(token))throw new Error(`${file}: missing ${token}`)}
           console.log('AI runtime contracts present.');
           NODE
-      - name: Run repository tests\n        run: npm test\n      - name: Check required element IDs
+      - name: Run repository tests
+        run: npm test
+      - name: Check required element IDs
         run: |
           node --input-type=module <<'NODE'
           import { readFileSync } from 'node:fs';
