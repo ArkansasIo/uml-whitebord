@@ -61,6 +61,16 @@ See [the C++23 implementation guide](cpp23/README.md) for modules, configuration
 
 An initial C++23 desktop application shell is available in [`mlta-studio/`](mlta-studio/README.md). It includes an optional Qt 6 Widgets UI with a project explorer, source editor, logic outline, diagnostics pane, menus, toolbar, and status footer. The parser/runtime and editable logic graph are planned follow-up milestones; see the project README for current scope and build instructions.
 
+## UML Blueprint Library
+
+The browser editor includes reusable starter diagrams for application classes, REST API architecture, RPG/MMORPG systems, database domains, AI agent runtimes, use cases, components, deployment topology, activity flows, state machines, package layers, object snapshots, and sequence-planning flows. Select **◇ Blueprints** to apply a template or download it as editable JSON. **Diagram Types** catalogs 14 UML families; specialized sequence/activity/state renderers remain future implementation work. **Projects** supports local multi-diagram records and project JSON import/export.
+
+- [Blueprint documentation](uml-studio/BLUEPRINTS.md)
+- [Blueprint interchange schema](uml-studio/blueprint.schema.json)
+- [Blueprint implementation](uml-studio/blueprint-system.js)
+
+Blueprints are validated for supported node and relationship types, unique identifiers, geometry, and valid endpoints. Applying a template replaces the active diagram only after confirmation and is undoable. The library runs locally in the browser and does not require a backend.
+
 ## MLTA UML Studio — Browser Diagram Editor
 
 A static, browser-based UML editor prototype with a UML shape palette, movable elements, relationships, a properties inspector, undo/redo, local saving, and SVG/JSON import/export.
