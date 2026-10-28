@@ -30,5 +30,27 @@
     if(kind&&!byId.has(kind))errors.push("Unknown UML diagram type: "+kind);
     return {ok:errors.length===0,errors};
   }
+  function installCatalogButton(){
+    const toolbar=document.querySelector(".toolbar");
+    if(!toolbar||document.getElementById("umlDiagramCatalog"))return;
+    const button=document.createElement("button");button.id="umlDiagramCatalog";button.textContent="Diagram Types";button.title="Browse UML diagram families";
+    button.addEventListener("click",()=>{
+      let dialog=document.getElementById("umlCatalogDialog");
+      if(!dialog){
+        dialog=document.createElement("dialog");dialog.id="umlCatalogDialog";
+        dialog.style.cssText="width:min(760px,calc(100% - 24px));max-height:85vh;overflow:auto;border:1px solid #d8dfeb;border-radius:12px;padding:18px;color:#23314a";
+        const heading=document.createElement("div");heading.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:12px";
+        const title=document.createElement("h2");title.textContent="UML Diagram Catalog";title.style.margin="0";
+        const close=document.createElement("button");close.textContent="Close";close.addEventListener("click",()=>dialog.close());heading.append(title,close);
+        const note=document.createElement("p");note.textContent="Catalog and requirements for specialized diagram editors. Entries marked as catalog specifications are not yet full dedicated renderers.";note.style.color="#64748b";
+        const grid=document.createElement("div");grid.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px";
+        for(const item of types){const card=document.createElement("article");card.style.cssText="padding:12px;border:1px solid #e2e8f0;border-radius:8px";const h=document.createElement("strong");h.textContent=item.name;const p=document.createElement("p");p.textContent=item.purpose;p.style.cssText="font-size:12px;line-height:1.45;color:#52627a";const meta=document.createElement("small");meta.textContent=item.elements.length+" element kinds · "+item.relationships.length+" relationship kinds";meta.style.color="#64748b";card.append(h,p,meta);grid.append(card);}
+        dialog.append(heading,note,grid);document.body.append(dialog);
+      }
+      dialog.showModal();
+    });
+    toolbar.append(button);
+  }
   root.MLTAUMLSystems={version:"1.0.0",list,get,validateModel};
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",installCatalogButton);else installCatalogButton();
 })(window);
