@@ -23,5 +23,58 @@
   function exportProject(project){return JSON.stringify(normalizeProject(project),null,2);}
   function importProject(raw){const p=normalizeProject(typeof raw==="string"?JSON.parse(raw):raw);return save(p);}
   function create(name){return save({name:name||"Untitled project",description:"",diagrams:[]});}
-  root.MLTAUMLProjectStore={version:VERSION,create,save,list,load,remove,exportProject,importProject};
+  function captureCurrent(projectId){
+    const project=load(projectId);if(!project)throw new Error("Project not found.");
+    const raw=root.localStorage.getItem("mlta-uml-studio");if(!raw)throw new Error("No saved current diagram found. Save a diagram in the editor first.");
+    const model=JSON.parse(raw);if(!Array.isArray(model.nodes)||!Array.isArray(model.edges))throw new Error("Current saved diagram is invalid.");
+    const title=String(model.title||"Untitled diagram").slice(0,120);
+    const diagram={id:"d-"+Date.now().toString(36),title,type:"class",model:{nodes:model.nodes,edges:model.edges}};
+    project.diagrams.push(diagram);return save(project);
+  }
+  function download(name,content,type){
+    const blob=new Blob([content],{type:type||"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+    a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+  function installProjectButton(){
+    const toolbar=document.querySelector(".toolbar");
+    if(!toolbar||document.getElementById("umlProjectsButton"))return;
+    const button=document.createElement("button");button.id="umlProjectsButton";button.textContent="Projects";button.title="Manage local UML projects";
+    button.addEventListener("click",()=>{
+      let dialog=document.getElementById("umlProjectsDialog");
+      if(!dialog){
+        dialog=document.createElement("dialog");dialog.id="umlProjectsDialog";
+        dialog.style.cssText="width:min(640px,calc(100% - 24px));max-height:85vh;overflow:auto;border:1px solid #d8dfeb;border-radius:12px;padding:18px;color:#23314a";
+        const head=document.createElement("div");head.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:10px";
+        const title=document.createElement("h2");title.textContent="Local UML Projects";title.style.margin="0";
+        const close=document.createElement("button");close.textContent="Close";close.addEventListener("click",()=>dialog.close());head.append(title,close);
+        const note=document.createElement("p");note.textContent="Projects are stored in this browser only. Capture a saved diagram into a project, or export/import a portable project JSON file.";note.style.color="#64748b";
+        const actions=document.createElement("div");actions.style.cssText="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0";
+        const createButton=document.createElement("button");createButton.textContent="New project";
+        const importButton=document.createElement("button");importButton.textContent="Import project JSON";
+        const file=document.createElement("input");file.type="file";file.accept=".json,application/json";file.hidden=true;
+        const listBox=document.createElement("div");listBox.id="umlProjectsList";
+        createButton.addEventListener("click",()=>{const name=prompt("Project name","New UML project");if(name===null)return;try{create(name);renderList();}catch(e){alert(e.message);}});
+        importButton.addEventListener("click",()=>file.click());
+        file.addEventListener("change",async()=>{const f=file.files&&file.files[0];if(!f)return;try{importProject(await f.text());renderList();}catch(e){alert("Project import failed: "+e.message);}finally{file.value="";}});
+        actions.append(createButton,importButton,file);dialog.append(head,note,actions,listBox);document.body.append(dialog);
+        function renderList(){
+          listBox.replaceChildren();const projects=list();
+          if(!projects.length){const empty=document.createElement("p");empty.textContent="No projects yet. Create one to begin.";listBox.append(empty);return;}
+          for(const p of projects){const row=document.createElement("section");row.style.cssText="border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin:8px 0";
+            const name=document.createElement("strong");name.textContent=p.name;const meta=document.createElement("p");meta.textContent=(p.diagramCount||0)+" diagrams · updated "+new Date(p.updatedAt).toLocaleString();meta.style.cssText="font-size:12px;color:#64748b";
+            const controls=document.createElement("div");controls.style.cssText="display:flex;gap:6px;flex-wrap:wrap";
+            const capture=document.createElement("button");capture.textContent="Capture current saved diagram";capture.addEventListener("click",()=>{try{captureCurrent(p.id);renderList();}catch(e){alert(e.message);}});
+            const exportButton=document.createElement("button");exportButton.textContent="Export JSON";exportButton.addEventListener("click",()=>{try{const project=load(p.id);download((project.name||"uml-project").toLowerCase().replace(/[^a-z0-9]+/g,"-")+".json",exportProject(project));}catch(e){alert(e.message);}});
+            const deleteButton=document.createElement("button");deleteButton.textContent="Delete";deleteButton.addEventListener("click",()=>{if(confirm('Delete project "'+p.name+'"?')){remove(p.id);renderList();}});
+            controls.append(capture,exportButton,deleteButton);row.append(name,meta,controls);listBox.append(row);
+          }
+        }
+        dialog._renderProjectList=renderList;
+      }
+      dialog._renderProjectList();dialog.showModal();
+    });
+    toolbar.append(button);
+  }
+  root.MLTAUMLProjectStore={version:VERSION,create,save,list,load,remove,exportProject,importProject,captureCurrent};
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",installProjectButton);else installProjectButton();
 })(window);
