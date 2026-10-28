@@ -63,7 +63,7 @@ An initial C++23 desktop application shell is available in [`mlta-studio/`](mlta
 
 ## UML Blueprint Library
 
-The browser editor includes a reusable blueprint library with starter diagrams for application classes, REST API architecture, RPG/MMORPG core systems, database domains, and AI agent runtimes. Select **◇ Blueprints** in the UML Studio toolbar to apply a template or download it as editable JSON.
+The browser editor includes reusable starter diagrams for application classes, REST API architecture, RPG/MMORPG systems, database domains, AI agent runtimes, use cases, components, deployment topology, activity flows, state machines, package layers, object snapshots, and sequence-planning flows. Select **◇ Blueprints** to apply a template or download it as editable JSON. **Diagram Types** catalogs 14 UML families; specialized sequence/activity/state renderers remain future implementation work. **Projects** supports local multi-diagram records and project JSON import/export.
 
 - [Blueprint documentation](uml-studio/BLUEPRINTS.md)
 - [Blueprint interchange schema](uml-studio/blueprint.schema.json)
